@@ -33,23 +33,21 @@ The trade-off becomes:
 
 ## 2  Methodology
 
-The analysis is split into two Monte-Carlo experiments.
+The analysis is now split into **three** Monte-Carlo experiments.
 
-|                        | Time-boxed sweep | Unlimited play |
-|------------------------|------------------|----------------|
-| Goal                   | How does a fixed “quit after *N* tosses” rule alter profit, bust risk, and hit-rate? | What is the best bankroll you could ever reach, and how long (on average) before ruin? |
-| Box length / Safety cap| `N = 10 → 150` (step 5) | No time-box; hard safety cap at **150** rounds to prevent infinite paths |
-| Base stake **B**       | \$5, \$10, \$20 | same |
-| Initial bankroll       | \$1 000 | same |
-| Coin bias              | Fair (p = 0.5) | same |
-| Loss multiplier        | 2.0 (classic Martingale) | same |
-| Trials per setting     | 20 000 per (B, N) pair | 100 000 per stake |
-| Recorded metrics       | • mean / median final bankroll<br>• % profitable<br>• bust-rate<br>• avg win / loss sizes | • average & median **peak profit** (max bankroll − \$1 000)<br>• average bust round (NaN if cap hit)<br>• bust-rate |
+|                        | Time-boxed sweep | Unlimited (fixed cap) | Unlimited (cap sweep) |
+|------------------------|------------------|-----------------------|-----------------------|
+| Goal                   | How does a fixed “quit after *N* tosses” rule alter profit, bust risk, and hit-rate? | How big can the bankroll get before ruin under one generous cap? | How do peak profit and bust risk evolve as the cap lengthens? |
+| Box length / Safety cap| `N = 10 → 150` (step 5) | Hard cap = **150** rounds | Caps = **10 → 150** (step 5) |
+| Base stake **B**       | \$5, \$10, \$20 | same | same |
+| Initial bankroll       | \$1 000         | same | same |
+| Coin bias              | Fair (p = 0.5)  | same | same |
+| Loss multiplier        | 2.0 (classic Martingale) | same | same |
+| Trials per setting     | 20 000 per (B, N) | 100 000 per stake | 20 000 per (B, cap) |
+| Recorded metrics       | • mean / median bankroll<br>• % profitable<br>• bust-rate<br>• avg win / loss | • avg / median **peak profit**<br>• avg bust round<br>• bust-rate | • avg peak profit<br>• avg bust round<br>• bust-rate |
 
-> **Peak profit** answers “What could I have walked away with if I’d
-> quit at the perfect moment?”  
-> **Bust round** tells how quickly the Martingale collapses on average
-> when no quit rule is enforced.
+> **Peak profit** answers “What could I have walked away with if I’d quit at the perfect moment?”  
+> **Bust round** shows how fast the Martingale collapses once you stop quitting.
 
 ---
 
@@ -57,7 +55,7 @@ The analysis is split into two Monte-Carlo experiments.
 
 ### 3 .1  Probability of walking away ahead (coarse grid)
 
-![Probability curve](results/Figure_1.png "Probability of Walking Away Ahead")
+![Probability curve](results/probability_curve.png "Probability of Walking Away Ahead")
 
 *Short boxes give a high hit-rate but the curve decays rapidly as you allow more tosses.*
 
@@ -179,31 +177,60 @@ When the player *never* time-boxes and simply plays until the bankroll can no lo
 * **Avg bust round** – how long the strategy survives (on average) before ruin.  
 * **Bust-rate** – fraction of sessions that end in complete ruin under the 150-round safety cap.
 
+### 3.6  Unlimited play — safety-cap sweep
+
+![Cap sweep](results/cap_sweep.png "Peak profit / bust-round / bust-rate vs. cap")
+
+*Top panel — average peak profit rises with a longer cap.*  
+*Middle panel — average bust round lengthens steadily.*  
+*Bottom panel — bust-rate soars once the cap exceeds ~60 rounds, especially for the \$20 stake.*
+
 ---
 
 ## 4  Discussion
 
-* **Short time-boxes (≤ 50 tosses)**  
-  70 – 85 % of sessions end positive, but gains are coffee-money (< \$50).  
-* **Middle boxes (~75 – 100 tosses)**  
-  Hit-rate slips to ~60 – 70 %; typical wins \$200 – \$300; bust risk still < 1 %.  
-* **Long boxes (≥ 135 tosses)**  
-  Upside grows past \$300 but chance of profit falls below 60 % and bust risk climbs.
+### Time-boxed play
 
-**Unlimited play reveals why Martingale is dangerous**:
+* **Short boxes (≤ 50 tosses)** — 70 – 85 % of sessions end ahead but the
+  typical win is small (< \$50).  
+* **Middle boxes (~75 – 100 tosses)** — hit-rate drifts down to 60 – 70 %;
+  median wins climb toward \$250; bust-risk is still below 1 %.  
+* **Long boxes (≥ 135 tosses)** — upside exceeds \$300, yet chance of profit
+  drops below 60 % and bust-risk starts to matter.
 
-* Peak profits *look* attractive (up to \$750 on a \$1 000 bankroll)  
-* …but the **bust-rate explodes**: 40 % (B = \$5) → 75 % (B = \$20)  
-* The longer you chase that peak, the faster average ruin arrives (≈ 50–65 rounds).
+### Unlimited play
 
-Overall expected value is still ≈ \$0 (fair game); every “edge” is merely variance masked by the quit rule.
+The cap-sweep plot shows three clear trends as the safety cap lengthens:
+
+| Cap ≈ 60 rounds | Cap = 150 rounds |
+|-----------------|------------------|
+| Avg peak profit | \$200 / \$350 / \$550 (B =\$5/10/20) | \$280 / \$480 / \$730 |
+| Avg bust round  | ~30 / 26 / 23     | ~66 / 56 / 50 |
+| Bust-rate       | **30 % / 45 % / 60 %** | **38 % / 55 % / 75 %** |
+
+* Peak profit rises roughly linearly with the cap, but **risk rises
+  faster**—especially for the \$20 stake.  
+* Bust-round growth flattens: every extra 10 allowed tosses buys only a few
+  additional rounds before ruin on average.  
+* Once the cap exceeds ~60 rounds the bust-rate curve becomes almost
+  vertical for higher stakes (bottom panel of the figure).
+
+In other words, every extra shot at a bigger payday costs an outsized jump
+in the probability of total ruin.
 
 ---
 
 ## 5  Conclusion
 
-* A **time-boxed Martingale** can make you *feel* like a consistent winner if you quit early for small gains.  
-* **Unlimited play** quickly shows the scheme’s fatal flaw: ruin is inevitable and comes surprisingly fast as stakes rise.  
-* Choose a modest base stake and a strict time-box if you want to leave the Two-Up ring smiling—otherwise accept that you’re rolling dice against inevitable bust.
+* A **time-boxed Martingale** can deliver frequent, modest wins—as long as
+  you quit soon (≤ 50 tosses) and keep the base stake small.  
+* Extending the session past ~60 tosses **rapidly erodes that comfort**:
+  bust-risk climbs into double-digits for \$5 stakes and breaches 50 % for
+  \$20 stakes by the time you reach the 150-round cap.  
+* Unlimited play exposes the strategy’s fatal flaw: the rare long losing
+  streak eventually wipes out any series of small victories, and the
+  escalation is faster than the upside grows.
 
----
+> **Practical takeaway** – If you insist on playing a Martingale in
+> Two-Up, cap both the number of throws and the base stake. Treat anything
+> else as pure entertainment and budget for going bust.
