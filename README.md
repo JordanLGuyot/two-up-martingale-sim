@@ -1,7 +1,7 @@
-# Two-Up — Time-Boxed Martingale Study
+# Two-Up - Time-Boxed Martingale Study
 
 > *“The only fair game in town … unless you double after every loss.”*  
-> — Typical ANZAC-Day punter
+> - Typical ANZAC-Day punter
 
 This repository contains a small Monte-Carlo study that asks:
 
@@ -163,7 +163,7 @@ The analysis is now split into **three** Monte-Carlo experiments.
 | 150 | 29.02 | 1 298.33 | 1.155 |
 
 
-### 3.5  Unlimited play — peak profit & bust statistics
+### 3.5  Unlimited play - peak profit & bust statistics
 
 When the player *never* time-boxes and simply plays until the bankroll can no longer cover the next doubled stake, the picture changes dramatically.
 
@@ -177,13 +177,13 @@ When the player *never* time-boxes and simply plays until the bankroll can no lo
 * **Avg bust round** – how long the strategy survives (on average) before ruin.  
 * **Bust-rate** – fraction of sessions that end in complete ruin under the 150-round safety cap.
 
-### 3.6  Unlimited play — safety-cap sweep
+### 3.6  Unlimited play - safety-cap sweep
 
 ![Cap sweep](results/cap_sweep.png "Peak profit / bust-round / bust-rate vs. cap")
 
-*Top panel — average peak profit rises with a longer cap.*  
-*Middle panel — average bust round lengthens steadily.*  
-*Bottom panel — bust-rate soars once the cap exceeds ~60 rounds, especially for the \$20 stake.*
+*Top panel - average peak profit rises with a longer cap.*  
+*Middle panel - average bust round lengthens steadily.*  
+*Bottom panel - bust-rate soars once the cap exceeds ~60 rounds, especially for the \$20 stake.*
 
 ---
 
@@ -191,11 +191,11 @@ When the player *never* time-boxes and simply plays until the bankroll can no lo
 
 ### Time-boxed play
 
-* **Short boxes (≤ 50 tosses)** — 70 – 85 % of sessions end ahead but the
+* **Short boxes (≤ 50 tosses)** - 70 – 85 % of sessions end ahead but the
   typical win is small (< \$50).  
-* **Middle boxes (~75 – 100 tosses)** — hit-rate drifts down to 60 – 70 %;
+* **Middle boxes (~75 – 100 tosses)** - hit-rate drifts down to 60 – 70 %;
   median wins climb toward \$250; bust-risk is still below 1 %.  
-* **Long boxes (≥ 135 tosses)** — upside exceeds \$300, yet chance of profit
+* **Long boxes (≥ 135 tosses)** - upside exceeds \$300, yet chance of profit
   drops below 60 % and bust-risk starts to matter.
 
 ### Unlimited play
@@ -209,7 +209,7 @@ The cap-sweep plot shows three clear trends as the safety cap lengthens:
 | Bust-rate       | **30 % / 45 % / 60 %** | **38 % / 55 % / 75 %** |
 
 * Peak profit rises roughly linearly with the cap, but **risk rises
-  faster**—especially for the \$20 stake.  
+  faster**-especially for the \$20 stake.  
 * Bust-round growth flattens: every extra 10 allowed tosses buys only a few
   additional rounds before ruin on average.  
 * Once the cap exceeds ~60 rounds the bust-rate curve becomes almost
@@ -222,7 +222,7 @@ in the probability of total ruin.
 
 ## 5  Conclusion
 
-* A **time-boxed Martingale** can deliver frequent, modest wins—as long as
+* A **time-boxed Martingale** can deliver frequent, modest wins-as long as
   you quit soon (≤ 50 tosses) and keep the base stake small.  
 * Extending the session past ~60 tosses **rapidly erodes that comfort**:
   bust-risk climbs into double-digits for \$5 stakes and breaches 50 % for
