@@ -33,21 +33,23 @@ The trade-off becomes:
 
 ## 2  Methodology
 
-| Parameter | Values / Range |
-|-----------|----------------|
-| Initial bankroll | \$1 000 |
-| Base stake **B** | \$5, \$10, \$20 |
-| Box length **N** (max rounds) | 10 → 150 |
-| Loss multiplier | 2.0 (classic Martingale) |
-| Coin bias | Fair (p = 0.5) |
-| Trials per (B, N) | 20 000 Monte-Carlo sessions |
+The analysis is split into two Monte-Carlo experiments.
 
-For every (B, N) pair the script records:
+|                        | Time-boxed sweep | Unlimited play |
+|------------------------|------------------|----------------|
+| Goal                   | How does a fixed “quit after *N* tosses” rule alter profit, bust risk, and hit-rate? | What is the best bankroll you could ever reach, and how long (on average) before ruin? |
+| Box length / Safety cap| `N = 10 → 150` (step 5) | No time-box; hard safety cap at **150** rounds to prevent infinite paths |
+| Base stake **B**       | \$5, \$10, \$20 | same |
+| Initial bankroll       | \$1 000 | same |
+| Coin bias              | Fair (p = 0.5) | same |
+| Loss multiplier        | 2.0 (classic Martingale) | same |
+| Trials per setting     | 20 000 per (B, N) pair | 100 000 per stake |
+| Recorded metrics       | • mean / median final bankroll<br>• % profitable<br>• bust-rate<br>• avg win / loss sizes | • average & median **peak profit** (max bankroll − \$1 000)<br>• average bust round (NaN if cap hit)<br>• bust-rate |
 
-* Mean / median final bankroll  
-* Probability of finishing ahead  
-* Bust rate  
-* Average win size (conditional) & average loss size (conditional)
+> **Peak profit** answers “What could I have walked away with if I’d
+> quit at the perfect moment?”  
+> **Bust round** tells how quickly the Martingale collapses on average
+> when no quit rule is enforced.
 
 ---
 
@@ -163,29 +165,45 @@ For every (B, N) pair the script records:
 | 150 | 29.02 | 1 298.33 | 1.155 |
 
 
+### 3.5  Unlimited play — peak profit & bust statistics
+
+When the player *never* time-boxes and simply plays until the bankroll can no longer cover the next doubled stake, the picture changes dramatically.
+
+| Base stake | Avg peak profit | Median peak profit | Avg bust round | Bust-rate |
+|-----------:|---------------:|-------------------:|--------------:|----------:|
+| \$5  | \$ 290.35 | \$ 360 | 64.4 rounds | 39.5 % |
+| \$10 | \$ 488.84 | \$ 600 | 55.2 rounds | 55.1 % |
+| \$20 | \$ 749.41 | \$ 600 | 50.4 rounds | 75.3 % |
+
+* **Avg peak profit** – the best bankroll you *could* have walked away with if you’d stopped at exactly the right moment.  
+* **Avg bust round** – how long the strategy survives (on average) before ruin.  
+* **Bust-rate** – fraction of sessions that end in complete ruin under the 150-round safety cap.
+
 ---
 
 ## 4  Discussion
 
-* **Short boxes (≤ 50 tosses)**  
-  *70 – 85 %* of sessions end positive, but median profit is coffee-money (tens of dollars).  
+* **Short time-boxes (≤ 50 tosses)**  
+  70 – 85 % of sessions end positive, but gains are coffee-money (< \$50).  
 * **Middle boxes (~75 – 100 tosses)**  
-  Win-rate slides to ~60 – 70 %; typical wins hit \$200 – \$300; bust risk first appears (< 1 %).  
+  Hit-rate slips to ~60 – 70 %; typical wins \$200 – \$300; bust risk still < 1 %.  
 * **Long boxes (≥ 135 tosses)**  
-  Upside grows past \$300 but probability of profit falls below 60 % and bust risk climbs sharply.
+  Upside grows past \$300 but chance of profit falls below 60 % and bust risk climbs.
 
-Overall expected value remains near \$0 (fair game) — any “edge” is manufactured by the stop-time and shows up as variance, not free money.
+**Unlimited play reveals why Martingale is dangerous**:
+
+* Peak profits *look* attractive (up to \$750 on a \$1 000 bankroll)  
+* …but the **bust-rate explodes**: 40 % (B = \$5) → 75 % (B = \$20)  
+* The longer you chase that peak, the faster average ruin arrives (≈ 50–65 rounds).
+
+Overall expected value is still ≈ \$0 (fair game); every “edge” is merely variance masked by the quit rule.
 
 ---
 
 ## 5  Conclusion
 
-* A **time-boxed Martingale can make you feel like a winner** if you’re happy to quit early for small gains.  
-* Extending the session **quickly erodes that comfort** in exchange for a shot at much larger (but rarer) payouts.  
-* **Bust remains an ever-present tail risk**; no stop-time can remove it, only postpone it.
-
-In practice, use a small stake and a modest box if you just want the fun of
-leaving a few dollars ahead on ANZAC Day. Treat anything bigger as pure
-gambling entertainment.
+* A **time-boxed Martingale** can make you *feel* like a consistent winner if you quit early for small gains.  
+* **Unlimited play** quickly shows the scheme’s fatal flaw: ruin is inevitable and comes surprisingly fast as stakes rise.  
+* Choose a modest base stake and a strict time-box if you want to leave the Two-Up ring smiling—otherwise accept that you’re rolling dice against inevitable bust.
 
 ---
